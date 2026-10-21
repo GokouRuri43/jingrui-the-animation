@@ -1,0 +1,27 @@
+name: Blender cloud smoke
+on:
+  push:
+    paths:
+      - 'cloud/**'
+      - 'tools/**'
+      - 'previs/**'
+      - '.github/workflows/cloud-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cpu-previs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install and render three frames with Cycles CPU
+        run: bash cloud/install.sh
+      - name: Upload validation and preview
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blender-cpu-smoke
+          path: outputs/
+          if-no-files-found: warn
+          retention-days: 7
